@@ -130,7 +130,7 @@ class HomeView extends StackedView<HomeViewModel> {
                 const SizedBox(height: 8),
                 FadeTransition(
                   opacity: viewModel.headerAnimation,
-                  child: Text(
+                  child: const Text(
                     'Welcome to Your Dashboard',
                     // style: GoogleFonts.poppins(
                     //   fontSize: 16,
