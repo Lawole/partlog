@@ -7,7 +7,7 @@ A Flutter test app built using Stacked Architecture and Provider state managemen
 - Splash Screen with animations
 - Authentication system with:
   - Email/Password Login and Registration
-- Home screen with bottom navigation (4 tabs)
+- Home screen 
 - Network layer with Dio
 
 ## Network Layer
