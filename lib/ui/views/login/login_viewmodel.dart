@@ -10,7 +10,7 @@ import '../../../app/app.router.dart';
 import '../../../services/api/api_service.dart';
 import '../../../services/api/data/utils_service.dart';
 
-class LoginViewModel extends BaseViewModel {
+class LoginViewModel extends FormViewModel {
   final _apiService = locator<ApiService>();
   final _utilsService = locator<UtilsService>();
   final _navigationService = locator<NavigationService>();
@@ -19,10 +19,24 @@ class LoginViewModel extends BaseViewModel {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  LoginViewModel() {
+    emailController.addListener(notifyListeners);
+    passwordController.addListener(notifyListeners);
+  }
+
+  bool get isCredValid {
+    final email = emailController.text;
+    final password = passwordController.text;
+    return email.isNotEmpty &&
+        RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email) &&
+        password.isNotEmpty &&
+        password.length >= 6;
+  }
+
   Future<void> login() async {
-    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+    if (!isCredValid) {
       Fluttertoast.showToast(
-        msg: 'Please enter both email and password',
+        msg: 'Please enter valid email and password',
         toastLength: Toast.LENGTH_LONG,
         backgroundColor: Colors.red,
         textColor: Colors.white,
@@ -31,7 +45,7 @@ class LoginViewModel extends BaseViewModel {
       return;
     }
     log.i('Starting login, setting busy state');
-    // setBusy(true); // Triggers loading indicator
+    setBusy(true);
     try {
       final user = await _apiService.login(
         emailController.text,
@@ -67,7 +81,7 @@ class LoginViewModel extends BaseViewModel {
       );
     } finally {
       log.i('Dismissing loading state');
-      setBusy(false); // Should trigger EasyLoading.dismiss()
+      setBusy(false);
     }
   }
 
@@ -75,12 +89,21 @@ class LoginViewModel extends BaseViewModel {
     _navigationService.navigateTo(Routes.registerView);
   }
 
-  @override
-  void setBusy(bool value) {
-    log.i('Setting busy state: $value');
-    _utilsService.initiateLoading(value);
-    super.setBusy(value);
+  void navigateToForgotPassword() {
+    // _navigationService.navigateTo(Routes.forgotPasswordView);
   }
+
+  void goBack() {
+    _navigationService.back();
+  }
+
+
+  // @override
+  // void setBusy(bool value) {
+  //   log.i('Setting busy state: $value');
+  //   _utilsService.initiateLoading(value);
+  //   super.setBusy(value);
+  // }
 
   @override
   void dispose() {

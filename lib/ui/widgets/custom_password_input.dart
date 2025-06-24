@@ -8,12 +8,17 @@ class CustomInputFieldPassword extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final FocusNode? focusNode;
   final TextEditingController controller;
+  final FormFieldValidator<String>? validator;
+  final AutovalidateMode? autovalidateMode;
+
   const CustomInputFieldPassword({
     Key? key,
     required this.labelText,
     this.onChanged,
     this.focusNode,
     required this.controller,
+    this.validator,
+    this.autovalidateMode,
   }) : super(key: key);
 
   @override
@@ -23,16 +28,19 @@ class CustomInputFieldPassword extends StatefulWidget {
 
 class _CustomInputFieldPasswordState extends State<CustomInputFieldPassword> {
   bool _passwordVisible = false;
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       obscureText: !_passwordVisible,
+      autovalidateMode: widget.autovalidateMode,
       style: const TextStyle(fontSize: 16),
       onChanged: widget.onChanged,
       controller: widget.controller,
       focusNode: widget.focusNode,
       cursorColor: kcPrimaryColor,
       keyboardType: TextInputType.text,
+      validator: widget.validator,
       decoration: InputDecoration(
         suffixIcon: IconButton(
           onPressed: () {
@@ -46,7 +54,7 @@ class _CustomInputFieldPasswordState extends State<CustomInputFieldPassword> {
           ),
         ),
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        contentPadding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+        contentPadding: const EdgeInsets.fromLTRB(16, 5, 5, 20),
         hintText: widget.labelText,
         hintStyle: const TextStyle(
           fontSize: 15,
@@ -58,7 +66,7 @@ class _CustomInputFieldPasswordState extends State<CustomInputFieldPassword> {
             Radius.circular(5),
           ),
           borderSide: BorderSide(
-            color: kcMediumGrey,
+            color: kcPrimaryColor,
           ),
         ),
         border: const OutlineInputBorder(
@@ -73,14 +81,31 @@ class _CustomInputFieldPasswordState extends State<CustomInputFieldPassword> {
           borderRadius: BorderRadius.all(
             Radius.circular(12),
           ),
-          borderSide: BorderSide(color: kcMediumGrey),
+          borderSide: BorderSide(color: kcPrimaryColor),
         ),
         focusedBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(5),
           ),
           borderSide: BorderSide(
-            color: kcPrimaryColor,
+            color: kcGray0,
+          ),
+        ),
+        // Add error border for validation feedback
+        errorBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(5),
+          ),
+          borderSide: BorderSide(
+            color: Colors.red,
+          ),
+        ),
+        focusedErrorBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(5),
+          ),
+          borderSide: BorderSide(
+            color: Colors.red,
           ),
         ),
       ),

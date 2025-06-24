@@ -39,6 +39,8 @@ flutter:
   assets:
     - asset/lottie/
     - asset/images/
+    - asset/images/rm251-mind-08-f.jpg
+    - asset/images/rm222-mind-14.jpg
     - asset/svg/
     - asset/icon/
     - asset/lottie/spinner_animation.json

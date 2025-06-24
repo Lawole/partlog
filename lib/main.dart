@@ -12,9 +12,9 @@ Future<void> main() async {
   EasyLoading.instance
     ..indicatorType = EasyLoadingIndicatorType.fadingCircle
     ..loadingStyle = EasyLoadingStyle.dark
-    ..maskType = EasyLoadingMaskType.custom // If using custom mask
-    ..maskColor = Colors.black.withOpacity(0.5) // Set maskColor to avoid error
-    ..userInteractions = false; // Disable interactions during loading
+    ..maskType = EasyLoadingMaskType.custom
+    ..maskColor = Colors.black.withOpacity(0.5)
+    ..userInteractions = false;
   await setupLocator();
   setupDialogUi();
   setupBottomSheetUi();

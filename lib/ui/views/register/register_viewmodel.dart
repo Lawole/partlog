@@ -16,13 +16,51 @@ class RegisterViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
   final log = getLogger('RegisterViewModel');
 
+  final formKey = GlobalKey<FormState>();
+  final fullNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  bool _isChecked = false;
+  bool get isChecked => _isChecked;
+
+  bool _showCheckboxError = false;
+  bool get showCheckboxError => _showCheckboxError;
+
+  RegisterViewModel() {
+    fullNameController.addListener(_onTextChanged);
+    emailController.addListener(_onTextChanged);
+    passwordController.addListener(_onTextChanged);
+    confirmPasswordController.addListener(_onTextChanged);
+  }
+
+  void toggleCheckbox(bool? value) {
+    _isChecked = value ?? false;
+    _showCheckboxError = false;
+  notifyListeners();
+  }
+
+  bool get isFormValid {
+    return fullNameController.text.isNotEmpty &&
+        emailController.text.isNotEmpty &&
+        RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text) &&
+        passwordController.text.isNotEmpty &&
+        passwordController.text.length >= 6 &&
+        confirmPasswordController.text.isNotEmpty &&
+        passwordController.text == confirmPasswordController.text &&
+        _isChecked;
+  }
+
+  void _onTextChanged() {
+    notifyListeners();
+  }
 
   Future<void> register() async {
-    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+    _showCheckboxError = false; // Reset checkbox error
+    if (!formKey.currentState!.validate()) {
       Fluttertoast.showToast(
-        msg: 'Please enter both email and password',
+        msg: 'Please fill out all fields correctly',
         toastLength: Toast.LENGTH_LONG,
         backgroundColor: Colors.red,
         textColor: Colors.white,
@@ -30,8 +68,45 @@ class RegisterViewModel extends BaseViewModel {
       );
       return;
     }
+
+    if (!_isChecked) {
+      _showCheckboxError = true; // Show checkbox error
+      notifyListeners();
+      Fluttertoast.showToast(
+        msg: 'You must agree to the Terms of Use and Privacy Policy',
+        toastLength: Toast.LENGTH_LONG,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        timeInSecForIosWeb: 3,
+      );
+      return;
+    }
+
+    if (!isFormValid) {
+      Fluttertoast.showToast(
+        msg: 'Please ensure all fields are valid',
+        toastLength: Toast.LENGTH_LONG,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        timeInSecForIosWeb: 3,
+      );
+      return;
+    }
+
+    // Check for valid ReqRes credentials
+    if (emailController.text != 'eve.holt@reqres.in' || passwordController.text != 'pistol') {
+      Fluttertoast.showToast(
+        msg: 'Please enter valid ReqRes credentials (email: eve.holt@reqres.in, password: pistol) to continue',
+        toastLength: Toast.LENGTH_LONG,
+        backgroundColor: Colors.orangeAccent,
+        textColor: Colors.white,
+        timeInSecForIosWeb: 3,
+      );
+      return;
+    }
+
     log.i('Starting registration, setting busy state');
-    // setBusy(true);
+    setBusy(true);
     try {
       final user = await _apiService.register(
         emailController.text,
@@ -47,7 +122,9 @@ class RegisterViewModel extends BaseViewModel {
     } catch (e) {
       String errorMessage = 'Registration failed';
       if (e is DioException && e.response != null) {
-        if (e.response!.statusCode == 401) {
+        if (e.response!.statusCode == 400) {
+          errorMessage = 'Email already exists';
+        } else if (e.response!.statusCode == 401) {
           errorMessage = 'Unauthorized: Invalid credentials or API issue';
         } else if (e.response!.data['error'] != null) {
           errorMessage = e.response!.data['error'];
@@ -67,7 +144,7 @@ class RegisterViewModel extends BaseViewModel {
       );
     } finally {
       log.i('Dismissing loading state');
-      setBusy(false); // Should trigger EasyLoading.dismiss()
+      setBusy(false);
     }
   }
 
@@ -75,17 +152,28 @@ class RegisterViewModel extends BaseViewModel {
     _navigationService.navigateTo(Routes.loginView);
   }
 
-  @override
-  void setBusy(bool value) {
-    log.i('Setting busy state: $value');
-    _utilsService.initiateLoading(value);
-    super.setBusy(value);
+  // @override
+  // void setBusy(bool value) {
+  //   log.i('Setting busy state: $value');
+  //   _utilsService.initiateLoading(value);
+  //   super.setBusy(value);
+  //   notifyListeners();
+  // }
+
+  void goBack() {
+    _navigationService.back();
   }
 
   @override
   void dispose() {
+    fullNameController.removeListener(_onTextChanged);
+    emailController.removeListener(_onTextChanged);
+    passwordController.removeListener(_onTextChanged);
+    confirmPasswordController.removeListener(_onTextChanged);
+    fullNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 }

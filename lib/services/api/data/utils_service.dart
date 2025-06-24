@@ -4,30 +4,30 @@ import '../../../ui/widgets/loading_indicator.dart';
 
 class UtilsService {
 
-  // void initiateLoading(bool value) {
-  //   // TODO: implement setBusy
-  //   if (value) {
-  //     EasyLoading.show(
-  //       maskType: EasyLoadingMaskType.custom,
-  //       indicator: const LoadingIndicator(),
-  //     );
-  //     //notifyListeners();
-  //   } else {
-  //     EasyLoading.dismiss();
-  //     // notifyListeners();
-  //   }
-  // }
-
-  void initiateLoading(bool isLoading) {
-    if (isLoading) {
+  void initiateLoading(bool value) {
+    // TODO: implement setBusy
+    if (value) {
       EasyLoading.show(
-        status: 'Loading...',
         maskType: EasyLoadingMaskType.custom,
-        dismissOnTap: false,
+        indicator: const LoadingIndicator(),
       );
+      //notifyListeners();
     } else {
       EasyLoading.dismiss();
+      // notifyListeners();
     }
   }
+
+  // void initiateLoading(bool isLoading) {
+  //   if (isLoading) {
+  //     EasyLoading.show(
+  //       status: 'Loading...',
+  //       maskType: EasyLoadingMaskType.custom,
+  //       dismissOnTap: false,
+  //     );
+  //   } else {
+  //     EasyLoading.dismiss();
+  //   }
+  // }
 
 }
