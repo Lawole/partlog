@@ -84,126 +84,147 @@
 //       HomeViewModel();
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
-// import 'package:google_fonts/google_fonts.dart';
-
 import 'home_viewmodel.dart';
 
-class HomeView extends StackedView<HomeViewModel> {
+class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
 
   @override
-  Widget builder(
-      BuildContext context,
-      HomeViewModel viewModel,
-      Widget? child,
-      ) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF2196F3), Color(0xFF00BCD4)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _slideAnimation =
+        Tween<Offset>(begin: Offset(0, 0.1), end: Offset.zero).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ViewModelBuilder<HomeViewModel>.nonReactive(
+      viewModelBuilder: () => HomeViewModel(),
+      builder: (context, viewModel, child) => Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF2196F3), Color(0xFF00BCD4)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Animated Header
-                FadeTransition(
-                  opacity: viewModel.headerAnimation,
-                  child: Text(
-                    'Hello, ${viewModel.userName}!',
-                    // style: GoogleFonts.poppins(
-                    //   fontSize: 28,
-                    //   fontWeight: FontWeight.bold,
-                    //   color: Colors.white,
-                    // ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                FadeTransition(
-                  opacity: viewModel.headerAnimation,
-                  child: const Text(
-                    'Welcome to Your Dashboard',
-                    // style: GoogleFonts.poppins(
-                    //   fontSize: 16,
-                    //   color: Colors.white70,
-                    // ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Dashboard Cards
-                Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildDashboardCard(
-                        title: 'Analytics',
-                        icon: Icons.analytics,
-                        color: Colors.white,
-                        onTap: viewModel.navigateToAnalytics,
-                        animation: viewModel.cardAnimation,
+                      const Text(
+                        'Hello, Eve!',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                      _buildDashboardCard(
-                        title: 'Tasks',
-                        icon: Icons.task,
-                        color: Colors.white,
-                        onTap: viewModel.navigateToTasks,
-                        animation: viewModel.cardAnimation,
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Welcome to Your Dashboard',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white70,
+                        ),
                       ),
-                      _buildDashboardCard(
-                        title: 'Profile',
-                        icon: Icons.person,
-                        color: Colors.white,
-                        onTap: viewModel.navigateToProfile,
-                        animation: viewModel.cardAnimation,
+                      const SizedBox(height: 24),
+                      Expanded(
+                        child: GridView.count(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          children: [
+                            _buildDashboardCard(
+                              title: 'Analytics',
+                              icon: Icons.analytics,
+                              color: Colors.white,
+                              onTap: viewModel.navigateToAnalytics,
+                            ),
+                            _buildDashboardCard(
+                              title: 'Tasks',
+                              icon: Icons.task,
+                              color: Colors.white,
+                              onTap: viewModel.navigateToTasks,
+                            ),
+                            _buildDashboardCard(
+                              title: 'Profile',
+                              icon: Icons.person,
+                              color: Colors.white,
+                              onTap: viewModel.navigateToProfile,
+                            ),
+                            _buildDashboardCard(
+                              title: 'Settings',
+                              icon: Icons.settings,
+                              color: Colors.white,
+                              onTap: viewModel.navigateToSettings,
+                            ),
+                          ],
+                        ),
                       ),
-                      _buildDashboardCard(
-                        title: 'Settings',
-                        icon: Icons.settings,
-                        color: Colors.white,
-                        onTap: viewModel.navigateToSettings,
-                        animation: viewModel.cardAnimation,
+                      Center(
+                        child: ElevatedButton.icon(
+                          onPressed: viewModel.logout,
+                          icon: const Icon(Icons.logout),
+                          label: const Text('Logout',
+                              style: TextStyle(fontSize: 16)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 8,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                // Logout Button
-                Center(
-                  child: ScaleTransition(
-                    scale: viewModel.buttonAnimation,
-                    child: ElevatedButton.icon(
-                      onPressed: viewModel.logout,
-                      icon: const Icon(Icons.logout),
-                      label: Text(
-                        'Logout',
-                        // style: GoogleFonts.poppins(fontSize: 16),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 8,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -216,56 +237,44 @@ class HomeView extends StackedView<HomeViewModel> {
     required IconData icon,
     required Color color,
     required VoidCallback onTap,
-    required Animation<double> animation,
   }) {
-    return ScaleTransition(
-      scale: animation,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Card(
-          elevation: 8,
-          shape: RoundedRectangleBorder(
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 8,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
+            gradient: const LinearGradient(
+              colors: [Color(0xFF42A5F5), Color(0xFF26C6DA)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: const LinearGradient(
-                colors: [Color(0xFF42A5F5), Color(0xFF26C6DA)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 48,
+                color: color,
               ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  size: 48,
-                  color: color,
+              const SizedBox(height: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  title,
-                  // style: GoogleFonts.poppins(
-                  //   fontSize: 18,
-                  //   fontWeight: FontWeight.w600,
-                  //   color: color,
-                  // ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
-  }
-
-  @override
-  HomeViewModel viewModelBuilder(BuildContext context) => HomeViewModel();
-
-  @override
-  void onViewModelReady(HomeViewModel viewModel) {
-    viewModel.initAnimations(this as TickerProvider);
   }
 }

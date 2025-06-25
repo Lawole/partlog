@@ -53,7 +53,7 @@ class LoginViewModel extends FormViewModel {
       );
       if (user != null) {
         log.i('Login successful, navigating to HomeView');
-        await _navigationService.navigateTo(
+        await _navigationService.clearStackAndShow(
           Routes.homeView,
           arguments: {'token': user.token},
         );
@@ -66,7 +66,8 @@ class LoginViewModel extends FormViewModel {
         } else if (e.response!.data['error'] != null) {
           errorMessage = e.response!.data['error'];
         } else {
-          errorMessage = 'Error: ${e.response!.statusCode} - ${e.response!.data}';
+          errorMessage =
+              'Error: ${e.response!.statusCode} - ${e.response!.data}';
         }
       } else {
         errorMessage = e.toString();
@@ -96,7 +97,6 @@ class LoginViewModel extends FormViewModel {
   void goBack() {
     _navigationService.back();
   }
-
 
   // @override
   // void setBusy(bool value) {

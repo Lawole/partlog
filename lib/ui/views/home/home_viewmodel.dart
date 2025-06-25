@@ -36,9 +36,6 @@
 //   }
 // }
 
-
-
-import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -49,47 +46,6 @@ import '../../../app/app.router.dart';
 class HomeViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
   final log = getLogger('HomeViewModel');
-
-  String userName = 'User'; // Placeholder for user name
-  AnimationController? _controller;
-  late Animation<double> _headerAnimation;
-  late Animation<double> _cardAnimation;
-  late Animation<double> _buttonAnimation;
-
-  Animation<double> get headerAnimation => _headerAnimation;
-  Animation<double> get cardAnimation => _cardAnimation;
-  Animation<double> get buttonAnimation => _buttonAnimation;
-
-  void initAnimations(TickerProvider vsync) {
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: vsync,
-    );
-
-    _headerAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller!,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
-      ),
-    );
-
-    _cardAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller!,
-        curve: const Interval(0.3, 0.8, curve: Curves.easeOut),
-      ),
-    );
-
-    _buttonAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller!,
-        curve: const Interval(0.5, 1.0, curve: Curves.bounceOut),
-      ),
-    );
-
-    _controller!.forward();
-    notifyListeners();
-  }
 
   void navigateToAnalytics() {
     log.i('Navigating to Analytics');
@@ -114,11 +70,5 @@ class HomeViewModel extends BaseViewModel {
   void logout() {
     log.i('Logging out');
     _navigationService.clearStackAndShow(Routes.loginView);
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
   }
 }

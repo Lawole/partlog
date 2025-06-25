@@ -5,7 +5,6 @@ import 'package:partlog/ui/views/register/register_view.dart';
 
 import '../ui/bottom_sheets/notice/notice_sheet.dart';
 import '../ui/dialogs/info_alert/info_alert_dialog.dart';
-import '../ui/views/dojah_kyc/dojah_kyc_view.dart';
 import '../ui/views/home/home_view.dart';
 import '../ui/views/startup/startup_view.dart';
 import 'package:partlog/services/api/api_service.dart';
@@ -17,7 +16,6 @@ import 'package:partlog/services/api/data/utils_service.dart';
   routes: [
     MaterialRoute(page: HomeView),
     MaterialRoute(page: StartupView),
-    MaterialRoute(page: DojahKycView),
     MaterialRoute(page: LoginView),
     MaterialRoute(page: RegisterView),
 // @stacked-route

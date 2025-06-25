@@ -38,7 +38,7 @@ class RegisterViewModel extends BaseViewModel {
   void toggleCheckbox(bool? value) {
     _isChecked = value ?? false;
     _showCheckboxError = false;
-  notifyListeners();
+    notifyListeners();
   }
 
   bool get isFormValid {
@@ -56,52 +56,111 @@ class RegisterViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  // Future<void> register() async {
+  //   _showCheckboxError = false;
+  //   if (!formKey.currentState!.validate()) {
+  //     Fluttertoast.showToast(
+  //       msg: 'Please fill out all fields correctly',
+  //       toastLength: Toast.LENGTH_LONG,
+  //       backgroundColor: Colors.red,
+  //       textColor: Colors.white,
+  //       timeInSecForIosWeb: 3,
+  //     );
+  //     return;
+  //   }
+  //
+  //   if (!_isChecked) {
+  //     _showCheckboxError = true;
+  //     notifyListeners();
+  //     Fluttertoast.showToast(
+  //       msg: 'You must agree to the Terms of Use and Privacy Policy',
+  //       toastLength: Toast.LENGTH_LONG,
+  //       backgroundColor: Colors.red,
+  //       textColor: Colors.white,
+  //       timeInSecForIosWeb: 3,
+  //     );
+  //     return;
+  //   }
+  //
+  //   if (!isFormValid) {
+  //     Fluttertoast.showToast(
+  //       msg: 'Please ensure all fields are valid',
+  //       toastLength: Toast.LENGTH_LONG,
+  //       backgroundColor: Colors.red,
+  //       textColor: Colors.white,
+  //       timeInSecForIosWeb: 3,
+  //     );
+  //     return;
+  //   }
+  //
+  //   // // Check for valid ReqRes credentials
+  //   // if (emailController.text != 'eve.holt@reqres.in' || passwordController.text != 'pistol') {
+  //   //   Fluttertoast.showToast(
+  //   //     msg: 'Please enter valid ReqRes credentials (email: eve.holt@reqres.in, password: pistol) to continue',
+  //   //     toastLength: Toast.LENGTH_LONG,
+  //   //     backgroundColor: Colors.orangeAccent,
+  //   //     textColor: Colors.white,
+  //   //     timeInSecForIosWeb: 3,
+  //   //   );
+  //   //   return;
+  //   // }
+  //
+  //   log.i('Starting registration, setting busy state');
+  //   setBusy(true);
+  //   try {
+  //     final user = await _apiService.register(
+  //       emailController.text,
+  //       passwordController.text,
+  //     );
+  //     if (user != null) {
+  //       log.i('Registration successful, navigating to HomeView');
+  //       await _navigationService.navigateTo(
+  //         Routes.homeView,
+  //         arguments: {'token': user.token},
+  //       );
+  //     }
+  //   } catch (e) {
+  //     String errorMessage = 'Registration failed';
+  //     if (e is DioException && e.response != null) {
+  //       if (e.response!.statusCode == 400) {
+  //         errorMessage = 'Email already exists';
+  //       } else if (e.response!.statusCode == 401) {
+  //         errorMessage = 'Unauthorized: Invalid credentials or API issue';
+  //       } else if (e.response!.data['error'] != null) {
+  //         errorMessage = e.response!.data['error'];
+  //       } else {
+  //         errorMessage = 'Error: ${e.response!.statusCode} - ${e.response!.data}';
+  //       }
+  //     } else {
+  //       errorMessage = e.toString();
+  //     }
+  //     log.e('Registration error: $errorMessage');
+  //     Fluttertoast.showToast(
+  //       msg: errorMessage,
+  //       toastLength: Toast.LENGTH_LONG,
+  //       backgroundColor: Colors.red,
+  //       textColor: Colors.white,
+  //       timeInSecForIosWeb: 3,
+  //     );
+  //   } finally {
+  //     log.i('Dismissing loading state');
+  //     setBusy(false);
+  //   }
+  // }
+
   Future<void> register() async {
-    _showCheckboxError = false; // Reset checkbox error
-    if (!formKey.currentState!.validate()) {
+    if (!isFormValid || !_isChecked) {
       Fluttertoast.showToast(
-        msg: 'Please fill out all fields correctly',
+        msg: !_isChecked
+            ? 'You must agree to the Terms of Use and Privacy Policy'
+            : 'Please ensure all fields are valid',
         toastLength: Toast.LENGTH_LONG,
         backgroundColor: Colors.red,
         textColor: Colors.white,
         timeInSecForIosWeb: 3,
       );
-      return;
-    }
-
-    if (!_isChecked) {
-      _showCheckboxError = true; // Show checkbox error
+      _showCheckboxError = !_isChecked;
       notifyListeners();
-      Fluttertoast.showToast(
-        msg: 'You must agree to the Terms of Use and Privacy Policy',
-        toastLength: Toast.LENGTH_LONG,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        timeInSecForIosWeb: 3,
-      );
-      return;
-    }
-
-    if (!isFormValid) {
-      Fluttertoast.showToast(
-        msg: 'Please ensure all fields are valid',
-        toastLength: Toast.LENGTH_LONG,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        timeInSecForIosWeb: 3,
-      );
-      return;
-    }
-
-    // Check for valid ReqRes credentials
-    if (emailController.text != 'eve.holt@reqres.in' || passwordController.text != 'pistol') {
-      Fluttertoast.showToast(
-        msg: 'Please enter valid ReqRes credentials (email: eve.holt@reqres.in, password: pistol) to continue',
-        toastLength: Toast.LENGTH_LONG,
-        backgroundColor: Colors.orangeAccent,
-        textColor: Colors.white,
-        timeInSecForIosWeb: 3,
-      );
       return;
     }
 
@@ -114,7 +173,7 @@ class RegisterViewModel extends BaseViewModel {
       );
       if (user != null) {
         log.i('Registration successful, navigating to HomeView');
-        await _navigationService.navigateTo(
+        await _navigationService.clearStackAndShow(
           Routes.homeView,
           arguments: {'token': user.token},
         );
@@ -122,18 +181,21 @@ class RegisterViewModel extends BaseViewModel {
     } catch (e) {
       String errorMessage = 'Registration failed';
       if (e is DioException && e.response != null) {
-        if (e.response!.statusCode == 400) {
+        final code = e.response!.statusCode;
+        final data = e.response!.data;
+        if (code == 400) {
           errorMessage = 'Email already exists';
-        } else if (e.response!.statusCode == 401) {
-          errorMessage = 'Unauthorized: Invalid credentials or API issue';
-        } else if (e.response!.data['error'] != null) {
-          errorMessage = e.response!.data['error'];
+        } else if (code == 401) {
+          errorMessage = 'Unauthorized: Invalid credentials';
+        } else if (data['error'] != null) {
+          errorMessage = data['error'];
         } else {
-          errorMessage = 'Error: ${e.response!.statusCode} - ${e.response!.data}';
+          errorMessage = 'Error: $code - $data';
         }
       } else {
         errorMessage = e.toString();
       }
+
       log.e('Registration error: $errorMessage');
       Fluttertoast.showToast(
         msg: errorMessage,
@@ -151,14 +213,6 @@ class RegisterViewModel extends BaseViewModel {
   void navigateToLogin() {
     _navigationService.navigateTo(Routes.loginView);
   }
-
-  // @override
-  // void setBusy(bool value) {
-  //   log.i('Setting busy state: $value');
-  //   _utilsService.initiateLoading(value);
-  //   super.setBusy(value);
-  //   notifyListeners();
-  // }
 
   void goBack() {
     _navigationService.back();

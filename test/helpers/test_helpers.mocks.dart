@@ -752,4 +752,13 @@ class MockApiService extends _i1.Mock implements _i8.ApiService {
 /// A class which mocks [UtilsService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUtilsService extends _i1.Mock implements _i10.UtilsService {}
+class MockUtilsService extends _i1.Mock implements _i10.UtilsService {
+  @override
+  void initiateLoading(bool? value) => super.noSuchMethod(
+        Invocation.method(
+          #initiateLoading,
+          [value],
+        ),
+        returnValueForMissingStub: null,
+      );
+}

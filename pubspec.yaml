@@ -11,9 +11,6 @@ dependencies:
     sdk: flutter
   stacked: ^3.4.0
   stacked_services: ^1.1.0
-  flutter_dojah_kyc: 0.4.7
-  webview_flutter_android: 3.16.1
-  flutter_inappwebview: ^6.1.5
   rename: ^2.1.1
   dio: ^5.3.2
   get_it: ^7.6.0

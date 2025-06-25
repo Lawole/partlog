@@ -47,19 +47,16 @@ class _ButtonHotState extends State<ButtonHot> {
         onPressed: !widget.isDisabled ? widget.onPressed : null,
         style: OutlinedButton.styleFrom(
           padding: EdgeInsets.zero,
-          backgroundColor:
-          widget.color ?? (widget.isDisabled ? kcPrimaryColorLight : kcPrimaryColor),
+          backgroundColor: widget.color ??
+              (widget.isDisabled ? kcPrimaryColorLight : kcPrimaryColor),
           foregroundColor: widget.textColor ?? kcWhite,
           elevation: widget.elevation ?? 1,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(widget.borderRadius ?? 25.0),
           ),
           side: BorderSide(
-            color: widget.borderColor ??
-                Colors
-                    .transparent,
-            width: widget.borderWidth ??
-                0.0,
+            color: widget.borderColor ?? Colors.transparent,
+            width: widget.borderWidth ?? 0.0,
           ),
         ),
         child: Text(
