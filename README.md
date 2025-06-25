@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 # partlog App
 
 A Flutter test app built using Stacked Architecture and Provider state management.
